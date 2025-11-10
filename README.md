@@ -55,3 +55,32 @@ No heavy frameworks—keeps it lightweight (~50MB Docker image).
    ```bash
    git clone https://github.com/R3almN8N/R3almN8N.git
    cd R3almN8N
+
+
+workflow-tool/
+├── frontend/          # Vite React TS app
+│   ├── src/
+│   │   ├── components/ # e.g., Editor.tsx, NavMenu.tsx (we'll build this pro nav soon)
+│   │   ├── hooks/     # e.g., useWorkflow.ts
+│   │   ├── types/     # TS interfaces (WorkflowNode, etc.)
+│   │   ├── App.tsx
+│   │   └── main.tsx
+│   ├── tailwind.config.js
+│   ├── vite.config.ts
+│   ├── index.html
+│   └── package.json
+├── backend/           # Node/Express API + engine
+│   ├── src/
+│   │   ├── controllers/ # e.g., workflows.ts
+│   │   ├── engine/      # Core executor (BullMQ jobs)
+│   │   ├── models/      # Supabase queries
+│   │   ├── routes/
+│   │   ├── types/
+│   │   ├── app.ts
+│   │   └── server.ts
+│   ├── package.json
+│   └── tsconfig.json
+├── docker-compose.yml # Local stack (Supabase, Redis)
+├── .env.example       # Secrets (SUPABASE_URL, REDIS_URL)
+├── .gitignore
+└── README.md          # Setup/run instructions
