@@ -1,168 +1,107 @@
-import { useState, Suspense, lazy } from 'react';
-import useWorkflow from './hooks/useWorkflow';
-import type { MenuItem } from './types/menu';
-import NavMenu from './components/NavMenu';
-import {
-  Plus,
-  Play,               // ← NEW: import the Play icon
-  Home,
-  Settings,
-  FileText,
-  Workflow as EditorIcon,
-  Moon,
-  Sun,
-} from 'lucide-react';
-import { motion } from 'framer-motion';
-import SearchSkeleton from './components/SearchSkeleton';
-import type { Workflow } from './types';
-import ErrorBoundary from './components/ErrorBoundary';
+// src/App.tsx
+import React from 'react';
+import SidebarMenu from './components/SidebarMenu';
+import { Package, TrendingUp, Users, Settings } from 'lucide-react';
 
-const EditorPane = lazy(() => import('./components/EditorPane'));
-
-export default function App() {
-  const [name, setName] = useState('');
-  const [search, setSearch] = useState('');
-  const [tab, setTab] = useState<'creator' | 'editor'>('creator');
-  const [selected, setSelected] = useState<Workflow | null>(null);
-  const [darkMode, setDarkMode] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return (
-        localStorage.getItem('theme') === 'dark' ||
-        (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)
-      );
-    }
-    return false;
-  });
-
-  const { workflows, loading, createWorkflow, executeWorkflow } = useWorkflow();
-
-  const toggleDark = () => {
-    const newDark = !darkMode;
-    setDarkMode(newDark);
-    localStorage.setItem('theme', newDark ? 'dark' : 'light');
-    document.documentElement.classList.toggle('dark', newDark);
-  };
-
-  const menuItems: MenuItem[] = [
-    { label: 'Home', href: '/', icon: Home },
-    {
-      label: 'Workflows',
-      href: '/workflows',
-      icon: FileText,
-      children: [
-        { label: 'Templates', href: '/templates' },
-        { label: 'History', href: '/history' },
-      ],
-    },
-    { label: 'Editor', href: '/editor', icon: EditorIcon },
-    { label: 'Settings', href: '/settings', icon: Settings },
-  ];
-
-  const user = { name: 'Dev User', avatar: undefined };
-
-  const create = async () => {
-    if (!name.trim()) return;
-    const wf = await createWorkflow(name.trim());
-    if (wf) {
-      setSelected(wf);
-      setTab('editor');
-      setName('');
-    }
-  };
-
+function App() {
   return (
-    <div className={`min-h-screen ${darkMode ? 'dark' : ''} bg-gray-50 dark:bg-gray-900 transition-colors`}>
-      <NavMenu items={menuItems} user={user} onSearch={setSearch} loading={loading} />
+    <>
+      <SidebarMenu />
+      
+      <main className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
+        <div className="container mx-auto px-6 py-12 max-w-7xl">
+          {/* Hero Section */}
+          <div className="mb-16">
+            <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+              Welcome to NexusPro
+            </h1>
+            <p className="text-xl text-gray-300 max-w-3xl">
+              Experience the future of professional dashboards with our sleek, dark-themed interface. 
+              Built for performance, designed for elegance.
+            </p>
+          </div>
 
-      {/* Dark Mode Toggle */}
-      <button
-        onClick={toggleDark}
-        className="fixed bottom-6 right-6 z-50 p-3 bg-white dark:bg-gray-800 rounded-full shadow-lg hover:shadow-xl transition"
-        aria-label="Toggle dark mode"
-      >
-        {darkMode ? <Sun size={20} className="text-yellow-500" /> : <Moon size={20} className="text-blue-600" />}
-      </button>
-
-      <Suspense fallback={<SearchSkeleton />}>
-        <motion.main initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-7xl mx-auto p-6 md:p-8">
-          <ErrorBoundary fallback={<div className="text-red-600">Something went wrong.</div>}>
-            {tab === 'creator' ? (
-              <>
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
-                  <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Create Workflow</h2>
-                  <input
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="Enter workflow name..."
-                    className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg mb-4 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-                    aria-label="Workflow name"
-                  />
-                  <button
-                    onClick={create}
-                    disabled={loading || !name.trim()}
-                    className="flex items-center space-x-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition shadow-md"
-                  >
-                    <Plus size={20} />
-                    <span>Create & Edit</span>
-                  </button>
-                </div>
-
-                {workflows.length > 0 && (
-                  <div className="mt-8 bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
-                    <h3 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">Your Workflows</h3>
-                    <ul className="space-y-3">
-                      {workflows
-                        .filter((w) => w.name.toLowerCase().includes(search.toLowerCase()))
-                        .map((w) => (
-                          <li
-                            key={w.id}
-                            className="flex justify-between items-center p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition"
-                          >
-                            <span className="font-medium text-gray-900 dark:text-white">{w.name}</span>
-                            <div className="flex space-x-2">
-                              <button
-                                onClick={() => {
-                                  setSelected(w);
-                                  setTab('editor');
-                                }}
-                                className="text-blue-600 hover:underline text-sm font-medium"
-                              >
-                                Edit
-                              </button>
-                              <button
-                                onClick={() => executeWorkflow(w.id, { sample: 'test' })}
-                                disabled={loading}
-                                className="flex items-center space-x-1 text-green-600 hover:underline text-sm font-medium disabled:opacity-50"
-                              >
-                                <Play size={14} />
-                                <span>Run</span>
-                              </button>
-                            </div>
-                          </li>
-                        ))}
-                    </ul>
-                  </div>
-                )}
-              </>
-            ) : (
-              selected && (
-                <Suspense fallback={<div className="text-center py-10">Loading editor...</div>}>
-                  <EditorPane workflow={selected} onSave={setSelected} onTest={executeWorkflow} />
-                </Suspense>
-              )
-            )}
-
-            {tab === 'editor' && (
-              <button
-                onClick={() => setTab('creator')}
-                className="mt-6 inline-flex items-center text-blue-600 hover:underline font-medium"
+          {/* Stats Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+            {[
+              { icon: TrendingUp, label: 'Revenue', value: '$2.4M', change: '+12.5%' },
+              { icon: Users, label: 'Active Users', value: '48.2K', change: '+8.3%' },
+              { icon: Package, label: 'Products', value: '1,234', change: '+23.1%' },
+              { icon: Settings, label: 'Services', value: '89', change: '+5.7%' },
+            ].map((stat, index) => (
+              <div
+                key={index}
+                className="relative overflow-hidden rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 p-6 group hover:bg-white/10 transition-all duration-300"
               >
-                ← Back to Creator
-              </button>
-            )}
-          </ErrorBoundary>
-        </motion.main>
-      </Suspense>
-    </div>
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="relative z-10">
+                  <div className="flex items-center justify-between mb-4">
+                    <stat.icon className="w-8 h-8 text-blue-400" />
+                    <span className="text-sm font-medium text-green-400">{stat.change}</span>
+                  </div>
+                  <h3 className="text-3xl font-bold mb-1">{stat.value}</h3>
+                  <p className="text-gray-400">{stat.label}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Feature Cards */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 p-8">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600">
+                  <Package className="w-6 h-6 text-white" />
+                </div>
+                <h2 className="text-2xl font-bold">Premium Components</h2>
+              </div>
+              <p className="text-gray-300 mb-6">
+                Beautifully crafted components with glassmorphism effects, gradient accents, 
+                and smooth animations that elevate your application's visual appeal.
+              </p>
+              <ul className="space-y-3 text-gray-400">
+                <li className="flex items-center gap-3">
+                  <div className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+                  Responsive design across all devices
+                </li>
+                <li className="flex items-center gap-3">
+                  <div className="w-1.5 h-1.5 rounded-full bg-purple-400" />
+                  Dark mode optimized interface
+                </li>
+                <li className="flex items-center gap-3">
+                  <div className="w-1.5 h-1.5 rounded-full bg-pink-400" />
+                  Accessible and keyboard navigable
+                </li>
+              </ul>
+            </div>
+
+            <div className="rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 p-8">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600">
+                  <Settings className="w-6 h-6 text-white" />
+                </div>
+                <h2 className="text-2xl font-bold">Production Ready</h2>
+              </div>
+              <p className="text-gray-300 mb-6">
+                Built with performance in mind using React 18+, TypeScript, Tailwind CSS, 
+                and Framer Motion for buttery-smooth interactions.
+              </p>
+              <div className="grid grid-cols-2 gap-4">
+                {['TypeScript', 'Tailwind', 'Framer Motion', 'Lucide Icons'].map((tech) => (
+                  <div
+                    key={tech}
+                    className="py-3 px-4 rounded-lg bg-white/5 border border-white/10 text-center text-sm font-medium"
+                  >
+                    {tech}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </>
   );
 }
+
+export default App;
