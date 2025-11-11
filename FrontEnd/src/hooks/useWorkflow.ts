@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { Workflow } from '../types';
+import { Workflow, ExecutionContext } from '../types/index.ts'; // Explicit path to avoid resolution quirks
 
 export const useWorkflow = () => {
   const [workflows, setWorkflows] = useState<Workflow[]>([]);
