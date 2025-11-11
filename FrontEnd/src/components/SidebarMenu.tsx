@@ -10,15 +10,21 @@ import {
   Info, 
   Mail, 
   ChevronRight, 
-  ChevronDown,
   Search,
   User,
   Settings,
-  LogOut,
   Menu,
   X
 } from 'lucide-react';
 import clsx from 'clsx';
+
+// ──────────────────────────────────────────────────────────────
+// Props to sync collapse state with App.tsx
+// ──────────────────────────────────────────────────────────────
+interface SidebarMenuProps {
+  isCollapsed: boolean;
+  onCollapse: () => void;
+}
 
 interface MenuItem {
   label: string;
@@ -52,9 +58,8 @@ const menuData: MenuItem[] = [
   { label: 'Contact', icon: Mail, href: '/contact' },
 ];
 
-const SidebarMenu: React.FC = () => {
+const SidebarMenu: React.FC<SidebarMenuProps> = ({ isCollapsed, onCollapse }) => {
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
-  const [isCollapsed, setIsCollapsed] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
@@ -69,15 +74,17 @@ const SidebarMenu: React.FC = () => {
     setExpandedItems(newExpanded);
   };
 
-  const filteredMenu = menuData.map(item => ({
-    ...item,
-    children: item.children?.filter(child => 
-      child.label.toLowerCase().includes(searchQuery.toLowerCase())
-    ).filter(child => child.label.toLowerCase().includes(searchQuery.toLowerCase()))
-  })).filter(item => 
-    item.label.toLowerCase().includes(searchQuery.toLowerCase()) || 
-    (item.children && item.children.length > 0)
-  );
+  const filteredMenu = menuData
+    .map(item => ({
+      ...item,
+      children: item.children?.filter(child => 
+        child.label.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    }))
+    .filter(item => 
+      item.label.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      (item.children && item.children.length > 0)
+    );
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -169,10 +176,10 @@ const SidebarMenu: React.FC = () => {
             </h1>
           </motion.div>
           <button
-            onClick={() => setIsCollapsed(!isCollapsed)}
+            onClick={onCollapse}
             className="p-2 rounded-lg hover:bg-white/10 transition-colors lg:hidden"
           >
-            {isCollapsed ? <ChevronRight className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+            {isCollapsed ? <ChevronRight className="w-5 h-5" /> : <X className="w-5 h-5" />}
           </button>
         </div>
       </div>
@@ -291,14 +298,6 @@ const SidebarMenu: React.FC = () => {
           </>
         )}
       </AnimatePresence>
-
-      {/* Main Content Offset */}
-      <div className={clsx(
-        'transition-all duration-300',
-        'lg:ml-0 hidden lg:block',
-        isCollapsed ? 'lg:ml-20' : 'lg:ml-80'
-      )} />
-      <div className="lg:hidden pt-16" />
     </>
   );
 };

@@ -2,35 +2,57 @@
 import React from 'react';
 import SidebarMenu from './components/SidebarMenu';
 import { Package, TrendingUp, Users, Settings } from 'lucide-react';
+import clsx from 'clsx';
 
 function App() {
+  // SidebarMenu internally tracks its collapsed state.
+  // We read it via a tiny context-style prop (optional) – here we just reuse the
+  // same hook that SidebarMenu uses so the padding stays in sync.
+  const [isCollapsed, setIsCollapsed] = React.useState(false);
+
+  // Forward the collapse toggle to SidebarMenu (you could also lift this state
+  // into a layout component if you prefer).
+  const handleCollapse = () => setIsCollapsed((c) => !c);
+
   return (
     <>
-      <SidebarMenu />
-      
-      <main className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
+      {/* Sidebar – pass the collapse handler so the button inside it works */}
+      <SidebarMenu onCollapse={handleCollapse} isCollapsed={isCollapsed} />
+
+      {/* ──────────────────────────────────────────────────────────────── */}
+      {/*  FLEXIBLE MAIN PANEL – pushes content right of the sidebar */}
+      {/* ──────────────────────────────────────────────────────────────── */}
+      <main
+        className={clsx(
+          'min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white',
+          // Desktop: shift right by sidebar width
+          isCollapsed ? 'lg:pl-20' : 'lg:pl-80',
+          // Mobile: leave room for the fixed header
+          'pt-16 lg:pt-0'
+        )}
+      >
         <div className="container mx-auto px-6 py-12 max-w-7xl">
-          {/* Hero Section */}
+          {/* ────── Hero Section ────── */}
           <div className="mb-16">
             <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
               Welcome to NexusPro
             </h1>
             <p className="text-xl text-gray-300 max-w-3xl">
-              Experience the future of professional dashboards with our sleek, dark-themed interface. 
-              Built for performance, designed for elegance.
+              Experience the future of professional dashboards with our sleek,
+              dark-themed interface. Built for performance, designed for elegance.
             </p>
           </div>
 
-          {/* Stats Grid */}
+          {/* ────── Stats Grid ────── */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
             {[
               { icon: TrendingUp, label: 'Revenue', value: '$2.4M', change: '+12.5%' },
               { icon: Users, label: 'Active Users', value: '48.2K', change: '+8.3%' },
               { icon: Package, label: 'Products', value: '1,234', change: '+23.1%' },
               { icon: Settings, label: 'Services', value: '89', change: '+5.7%' },
-            ].map((stat, index) => (
+            ].map((stat, i) => (
               <div
-                key={index}
+                key={i}
                 className="relative overflow-hidden rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 p-6 group hover:bg-white/10 transition-all duration-300"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -46,8 +68,9 @@ function App() {
             ))}
           </div>
 
-          {/* Feature Cards */}
+          {/* ────── Feature Cards ────── */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Premium Components */}
             <div className="rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 p-8">
               <div className="flex items-center gap-4 mb-6">
                 <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600">
@@ -56,7 +79,7 @@ function App() {
                 <h2 className="text-2xl font-bold">Premium Components</h2>
               </div>
               <p className="text-gray-300 mb-6">
-                Beautifully crafted components with glassmorphism effects, gradient accents, 
+                Beautifully crafted components with glassmorphism effects, gradient accents,
                 and smooth animations that elevate your application's visual appeal.
               </p>
               <ul className="space-y-3 text-gray-400">
@@ -75,6 +98,7 @@ function App() {
               </ul>
             </div>
 
+            {/* Production Ready */}
             <div className="rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 p-8">
               <div className="flex items-center gap-4 mb-6">
                 <div className="p-3 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600">
@@ -83,8 +107,8 @@ function App() {
                 <h2 className="text-2xl font-bold">Production Ready</h2>
               </div>
               <p className="text-gray-300 mb-6">
-                Built with performance in mind using React 18+, TypeScript, Tailwind CSS, 
-                and Framer Motion for buttery-smooth interactions.
+                Built with performance in mind using React 18+, TypeScript,
+                Tailwind CSS, and Framer Motion for buttery-smooth interactions.
               </p>
               <div className="grid grid-cols-2 gap-4">
                 {['TypeScript', 'Tailwind', 'Framer Motion', 'Lucide Icons'].map((tech) => (
