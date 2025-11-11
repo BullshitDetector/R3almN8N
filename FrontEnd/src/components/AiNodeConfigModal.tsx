@@ -50,7 +50,11 @@ const AiNodeConfigModal: React.FC<Props> = ({ isOpen, node, onClose, onSave }) =
 
             <form onSubmit={submit}>
               <label className="block text-sm font-medium mb-2">
-                Prompt (use <code className="bg-gray-200 dark:bg-gray-700 px-1 rounded text-xs">{{`{{input}}`}}</code> for context)
+                Prompt (use{' '}
+                <code className="bg-gray-200 dark:bg-gray-700 px-1 rounded text-xs">
+                  {'{{input}}'}
+                </code>{' '}
+                for context)
               </label>
               <textarea
                 value={prompt}
