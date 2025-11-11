@@ -51,7 +51,7 @@ const NavMenu: React.FC<NavMenuProps> = React.memo(({ items, user, onSearch, loa
                 aria-haspopup="true"
                 aria-expanded={false} // Dynamic later
               >
-                <item.icon ? React.createElement(item.icon, { size: 20 }) : null}
+                {item.icon ? React.createElement(item.icon, { size: 20 }) : null}
                 <span>{item.label}</span>
                 {item.children && <ChevronDown className="ml-1 h-4 w-4" />}
               </button>
@@ -121,7 +121,7 @@ const NavMenu: React.FC<NavMenuProps> = React.memo(({ items, user, onSearch, loa
         <button onClick={toggleMenu} className="md:hidden p-2 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
           {isOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
-        <div className="flex-1 mx-4">
+        <div className="flex-1 mx-4 relative">
           <input
             type="text"
             placeholder="Search..."
@@ -152,7 +152,7 @@ const NavMenu: React.FC<NavMenuProps> = React.memo(({ items, user, onSearch, loa
                 <li key={item.label} className="border-b border-gray-100 dark:border-gray-700">
                   <details className="p-4">
                     <summary className="flex items-center space-x-2 cursor-pointer text-gray-700 dark:text-gray-300 hover:text-blue-600">
-                      <item.icon ? React.createElement(item.icon, { size: 20 }) : null>
+                      {item.icon ? React.createElement(item.icon, { size: 20 }) : null}
                       <span>{item.label}</span>
                     </summary>
                     {item.children && (
