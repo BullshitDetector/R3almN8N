@@ -1,37 +1,21 @@
 import { useState, useCallback } from 'react';
 
-// Inline types to avoid bundling issues (sync'd with ../types/index.ts)
-interface WorkflowNode {
-  id: string;
-  type: 'trigger' | 'action' | 'logic' | 'ai' | 'web3';
-  name: string;
-  position?: { x: number; y: number };
-  data: Record<string, any>;
-  outputs?: string[];
-}
-
-interface Workflow {
-  id: string;
-  name: string;
-  nodes: WorkflowNode[];
-  connections: { from: string; to: string }[];
-  active: boolean;
-}
-
-interface ExecutionContext {
-  input: Record<string, any>;
-  output: Record<string, any>;
-  error?: string;
-}
-
-export const useWorkflow = () => {
-  const [workflows, setWorkflows] = useState<Workflow[]>([]);
+/**
+ * Custom hook for workflow CRUD/execution.
+ * @returns {Object} workflows array, loading state, create/execute functions.
+ * workflows: Array of workflow objects { id, name, nodes, connections, active }
+ * loading: boolean
+ * createWorkflow: async (name: string) => Promise<workflow>
+ * executeWorkflow: async (id: string, input?: Object) => Promise<executionContext>
+ */
+export default function useWorkflow() {
+  const [workflows, setWorkflows] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const createWorkflow = useCallback(async (name: string) => {
+  const createWorkflow = useCallback(async (name) => {
     setLoading(true);
     try {
-      const newWorkflow: Workflow = {
+      const newWorkflow = {
         id: crypto.randomUUID(),
         name,
         nodes: [],
@@ -57,7 +41,7 @@ export const useWorkflow = () => {
     }
   }, []);
 
-  const executeWorkflow = useCallback(async (id: string, input?: Record<string, any>) => {
+  const executeWorkflow = useCallback(async (id, input) => {
     setLoading(true);
     try {
       const response = await fetch(`/api/workflows/${id}/execute`, {
@@ -68,7 +52,7 @@ export const useWorkflow = () => {
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
-      return await response.json() as ExecutionContext;
+      return await response.json();
     } catch (err) {
       console.error('Execute workflow failed:', err);
       throw err;
@@ -78,4 +62,4 @@ export const useWorkflow = () => {
   }, []);
 
   return { workflows, loading, createWorkflow, executeWorkflow };
-};
+}
