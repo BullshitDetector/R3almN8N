@@ -23,10 +23,6 @@ export default defineConfig({
   },
   base: process.env.VITE_APP_BASE_URL ? new URL('/', process.env.VITE_APP_BASE_URL).pathname : '/',
   build: {
-    target: 'es2020', // New: Aligns strict mode w/ modern JS (avoids reserved word clashes on exports)
-    lib: {
-      entry: 'src/main.tsx',
-      formats: ['es'],
-    },
+    target: 'esnext', // Modern JS target (avoids strict mode reserved word quirks on exports/let)
   },
 });
