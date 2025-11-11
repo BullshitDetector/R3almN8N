@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Handle, Position } from '@xyflow/react';
 import { motion } from 'framer-motion';
 import type { WorkflowNode } from '../types';

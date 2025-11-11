@@ -36,7 +36,7 @@ const EditorPane: React.FC<EditorPaneProps> = memo(({ workflow, onSave, onTest }
   }, [workflow.id, onTest]);
 
   const handleDragStart = useCallback((event: React.DragEvent, nodeType: WorkflowNode['type']) => {
-    event.dataTransfer.setData('application/reactflow', nodeType); // Stub for drag
+    event.dataTransfer.setData('application/reactflow', nodeType);
     event.dataTransfer.effectAllowed = 'move';
   }, []);
 
