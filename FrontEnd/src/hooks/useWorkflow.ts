@@ -20,8 +20,13 @@ export const useWorkflow = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newWorkflow),
       });
+      if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       const saved = await response.json();
       setWorkflows((prev) => [...prev, saved]);
+      return saved;
+    } catch (err) {
+      console.error('Create workflow failed:', err);
+      throw err; // Re-throw for UI handling (e.g., toast)
     } finally {
       setLoading(false);
     }
@@ -35,7 +40,11 @@ export const useWorkflow = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ input }),
       });
-      return await response.json();
+      if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      return await response.json() as ExecutionContext;
+    } catch (err) {
+      console.error('Execute workflow failed:', err);
+      throw err;
     } finally {
       setLoading(false);
     }
