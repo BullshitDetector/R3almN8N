@@ -2,7 +2,16 @@ import { useState, Suspense, lazy } from 'react';
 import useWorkflow from './hooks/useWorkflow';
 import type { MenuItem } from './types/menu';
 import NavMenu from './components/NavMenu';
-import { Plus, Home, Settings, FileText, Workflow as EditorIcon, Moon, Sun } from 'lucide-react';
+import {
+  Plus,
+  Play,               // ← NEW: import the Play icon
+  Home,
+  Settings,
+  FileText,
+  Workflow as EditorIcon,
+  Moon,
+  Sun,
+} from 'lucide-react';
 import { motion } from 'framer-motion';
 import SearchSkeleton from './components/SearchSkeleton';
 import type { Workflow } from './types';
@@ -17,8 +26,10 @@ export default function App() {
   const [selected, setSelected] = useState<Workflow | null>(null);
   const [darkMode, setDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem('theme') === 'dark' || 
-        (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      return (
+        localStorage.getItem('theme') === 'dark' ||
+        (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)
+      );
     }
     return false;
   });
@@ -62,7 +73,8 @@ export default function App() {
   return (
     <div className={`min-h-screen ${darkMode ? 'dark' : ''} bg-gray-50 dark:bg-gray-900 transition-colors`}>
       <NavMenu items={menuItems} user={user} onSearch={setSearch} loading={loading} />
-      
+
+      {/* Dark Mode Toggle */}
       <button
         onClick={toggleDark}
         className="fixed bottom-6 right-6 z-50 p-3 bg-white dark:bg-gray-800 rounded-full shadow-lg hover:shadow-xl transition"
@@ -109,7 +121,10 @@ export default function App() {
                             <span className="font-medium text-gray-900 dark:text-white">{w.name}</span>
                             <div className="flex space-x-2">
                               <button
-                                onClick={() => { setSelected(w); setTab('editor'); }}
+                                onClick={() => {
+                                  setSelected(w);
+                                  setTab('editor');
+                                }}
                                 className="text-blue-600 hover:underline text-sm font-medium"
                               >
                                 Edit
